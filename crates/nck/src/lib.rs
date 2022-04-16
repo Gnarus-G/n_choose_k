@@ -11,19 +11,24 @@ pub fn n_choose_k(n: u128, k: u128) -> BigUint {
 }
 
 fn fact(n: BigUint) -> BigUint {
-    let is_zero_or_1 = bigu128(0) == n || bigu128(1) == n;
+    match n {
+        n if is_zero_or_1(&n) => bigu128(1),
+        _ => {
+            let mut i = bigu128(1);
+            let mut ret = bigu128(1);
 
-    return if is_zero_or_1 {
-        bigu128(1)
-    } else {
-        let mut i = bigu128(1);
-        let mut ret = bigu128(1);
-        while i < n {
-            ret *= &i;
-            i += 1u128;
+            while i < n {
+                ret *= &i;
+                i += 1u128;
+            }
+            ret * n
         }
-        ret * n
-    };
+    }
+}
+
+#[inline]
+fn is_zero_or_1(n: &BigUint) -> bool {
+    bigu128(0) == *n || bigu128(1) == *n
 }
 
 #[inline]
