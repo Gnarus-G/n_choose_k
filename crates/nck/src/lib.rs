@@ -1,4 +1,4 @@
-use num::BigUint;
+use num::{range, BigUint};
 
 pub fn n_choose_k(n: u128, k: u128) -> BigUint {
     match k {
@@ -14,14 +14,13 @@ fn fact(n: BigUint) -> BigUint {
     match n {
         n if is_zero_or_1(&n) => bigu128(1),
         _ => {
-            let mut i = bigu128(1);
-            let mut ret = bigu128(1);
+            let mut running_result = n.clone();
 
-            while i < n {
-                ret *= &i;
-                i += 1u128;
+            for i in range(bigu128(1), n) {
+                running_result *= i;
             }
-            ret * n
+
+            running_result
         }
     }
 }
