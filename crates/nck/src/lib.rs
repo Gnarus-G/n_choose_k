@@ -16,7 +16,13 @@ fn fact(n: BigUint) -> BigUint {
     return if is_zero_or_1 {
         bigu128(1)
     } else {
-        &n * fact(&n - bigu128(1))
+        let mut i = bigu128(1);
+        let mut ret = bigu128(1);
+        while i < n {
+            ret *= &i;
+            i += 1u128;
+        }
+        ret * n
     };
 }
 
@@ -27,6 +33,13 @@ pub fn bigu128(i: u128) -> BigUint {
 
 #[test]
 #[cfg(test)]
+fn test_fact_simple() {
+    assert_eq!(fact(bigu128(5)), bigu128(120))
+}
+
+#[test]
+#[cfg(test)]
 fn test_fact_no_crash() {
-    fact(bigu128(35)); //fact(35u128) would cause overflow and crash;
+    fact(bigu128(35)); //fact(35u128) would cause multiply by overflow error and crash
+    fact(bigu128(99999)); //fact(bigu128(99999)) would cause stack overflow and crash, when implemented with recursion
 }
