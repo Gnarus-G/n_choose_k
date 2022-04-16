@@ -1,22 +1,42 @@
 use nck::n_choose_k;
-use std::env::args;
+use std::{env::args, process::exit};
 
 fn main() {
     let args: Vec<String> = args().collect();
 
-    let n = args
-        .get(1)
-        .expect("Need to enter the value for n.")
-        .parse()
-        .expect("Couldn't parse number n from the arguments given.");
+    let [n, k] = parse_two_numbers(&args);
 
-    let k = args
+    println!("{:?}", n_choose_k(n, k));
+}
+
+fn parse_two_numbers(args: &[String]) -> [u128; 2] {
+    let x = args
+        .get(1)
+        .unwrap_or_else(|| {
+            eprintln!("Need to enter at least one number!");
+            exit(1)
+        })
+        .parse()
+        .unwrap_or_else(|err| {
+            eprintln!(
+                "Couldn't parse a number from the first argument! \n ↪ {}",
+                err
+            );
+            exit(1)
+        });
+
+    let y = args
         .get(2)
         .map(|s| {
-            s.parse()
-                .expect("Couldn't parse number k from the arguments given.")
+            s.parse().unwrap_or_else(|err| {
+                eprintln!(
+                    "Couldn't parse a number from the second argument! \n ↪ {}",
+                    err
+                );
+                exit(1);
+            })
         })
         .unwrap_or_default();
 
-    println!("{:?}", n_choose_k(n, k));
+    [x, y]
 }
