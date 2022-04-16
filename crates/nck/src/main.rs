@@ -1,4 +1,4 @@
-use nchooserust::*;
+use nck::n_choose_k;
 use std::env::args;
 
 fn main() {
