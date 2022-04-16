@@ -1,4 +1,4 @@
-use nck::n_choose_k;
+use n_choose_k::*;
 use std::{env::args, process::exit};
 
 fn main() {

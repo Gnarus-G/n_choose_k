@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use nck::*;
+    use n_choose_k::*;
 
     #[test]
     fn test_n_choose_k() {

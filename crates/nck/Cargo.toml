@@ -1,8 +1,16 @@
 [package]
-name = "nck"
+name = "n_choose_k"
 version = "0.1.0"
 license = "MIT"
 edition = "2021"
+
+[[bin]]
+name = "n-choose-k"
+path = "src/main.rs"
+
+[[bin]]
+name = "nck"
+path = "src/main.rs"
 
 [dependencies]
 num = "*"
