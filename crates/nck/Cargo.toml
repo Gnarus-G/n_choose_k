@@ -1,6 +1,6 @@
 [package]
 name = "n_choose_k"
-version = "0.1.3"
+version = "0.1.4"
 license = "MIT"
 edition = "2021"
 

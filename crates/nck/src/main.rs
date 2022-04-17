@@ -1,5 +1,7 @@
 use clap::Parser;
+use factorial::utils::utils::{FactorialsCache, FactorialsHashMap, NoCacheCache};
 use n_choose_k::*;
+use num::BigUint;
 use std::process;
 
 #[derive(Parser, Debug)]
@@ -7,11 +9,11 @@ use std::process;
 struct Args {
     /// The cardinality of the set in question.
     #[clap(name = "n")]
-    n: Option<u128>,
+    n: Option<BigUint>,
 
     /// The amount to choose.
     #[clap(name = "k")]
-    k: Option<u128>,
+    k: Option<BigUint>,
 
     /// Enable multithreading.
     #[clap(short, long)]
@@ -30,13 +32,13 @@ fn main() {
         process::exit(1)
     });
 
-    let k = args.k.unwrap_or(1);
+    let k = args.k.unwrap_or(BigUint::from(1u8));
 
     match args.cache {
-        true => println!("{:?}", n_choose_k(n, k)),
+        true => println!("{:?}", n_choose_k(n, k, FactorialsHashMap::new())),
         false => match args.multi {
             true => println!("{:?}", n_choose_k_multi_threaded(n, k)),
-            false => println!("{:?}", n_choose_k(n, k)),
+            false => println!("{:?}", n_choose_k(n, k, NoCacheCache::new())),
         },
     }
 }

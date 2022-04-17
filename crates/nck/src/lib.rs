@@ -1,33 +1,55 @@
-use std::thread;
+use std::{hash::Hash, iter::Product, thread};
 
 use factorial::{
     factorial,
-    utils::utils::{CachedFactorials, FactorialsCache, NoCacheCache},
+    utils::utils::{CachedFactorials, FactorialsCache},
 };
-use num::BigUint;
+use num::{one, ToPrimitive, Unsigned};
 
-pub fn n_choose_k(n: u128, k: u128) -> BigUint {
-    let mut factorials = CachedFactorials::new(NoCacheCache::new());
+pub fn n_choose_k<
+    Int: Unsigned + Eq + Hash + Clone + From<usize> + PartialOrd + ToPrimitive,
+    C: FactorialsCache<Int>,
+>(
+    n: Int,
+    k: Int,
+    cache: C,
+) -> Int {
+    let mut factorials = CachedFactorials::new(cache);
 
     match k {
-        0 => big(1),
-        1 => big(n),
-        k if k == n => big(1),
-        k if n - k == 1 => big(n),
-        _ => factorials.get(big(n)) / factorials.get(big(k)) / factorials.get(big(n - k)),
+        k if k.is_zero() => one(),
+        k if k.is_one() => n,
+        k if k == n => one(),
+        k if (n.clone() - k.clone()).is_one() => n,
+        _ => factorials.get(n.clone()) / factorials.get(k.clone()) / factorials.get(n - k),
     }
 }
 
-pub fn n_choose_k_multi_threaded(n: u128, k: u128) -> BigUint {
+pub fn n_choose_k_multi_threaded<
+    Int: Unsigned
+        + Eq
+        + Hash
+        + Clone
+        + From<usize>
+        + PartialOrd
+        + ToPrimitive
+        + Send
+        + Product
+        + 'static,
+>(
+    n: Int,
+    k: Int,
+) -> Int {
     match k {
-        0 => big(1),
-        1 => big(n),
-        k if k == n => big(1),
-        k if n - k == 1 => big(n),
+        k if k.is_zero() => one(),
+        k if k.is_one() => n,
+        k if k == n => one(),
+        k if (n.clone() - k.clone()).is_one() => n,
         _ => {
-            let first = thread::spawn(move || factorial(big(n)));
-            let second = thread::spawn(move || factorial(big(k)));
-            let last = thread::spawn(move || factorial(big(n - k)));
+            let n_minus_k = n.clone() - k.clone();
+            let first = thread::spawn(move || factorial(n));
+            let second = thread::spawn(move || factorial(k));
+            let last = thread::spawn(move || factorial(n_minus_k));
 
             let numerator = first.join().unwrap();
             let div_1 = second.join().unwrap();
@@ -36,9 +58,4 @@ pub fn n_choose_k_multi_threaded(n: u128, k: u128) -> BigUint {
             numerator / div_1 / div_2
         }
     }
-}
-
-#[inline]
-pub fn big(i: u128) -> BigUint {
-    BigUint::from(i)
 }
