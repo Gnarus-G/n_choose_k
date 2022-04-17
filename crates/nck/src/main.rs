@@ -1,51 +1,40 @@
-use clap::Parser;
+use clap::{ArgEnum, Parser};
 use factorial::utils::utils::{FactorialsCache, FactorialsHashMap, NoCacheCache};
 use n_choose_k::*;
 use num::BigUint;
-use std::process;
 
-#[derive(Parser, Debug)]
+#[derive(Parser)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
     /// The cardinality of the set in question.
     #[clap(name = "n")]
-    n: Option<BigUint>,
+    n: BigUint,
 
     /// The amount to choose.
     #[clap(name = "k")]
-    k: Option<BigUint>,
+    k: BigUint,
 
-    /// Enable multithreading.
-    #[clap(short, long)]
-    multi: bool,
+    /// Pick a mode; each has a different impact on performance.
+    #[clap(arg_enum, default_value = "naive")]
+    mode: Mode,
+}
 
-    /// Enable caching (also disables multithreading).
-    #[clap(short, long)]
-    cache: bool,
-
-    /// Enable bloated abstraction.
-    #[clap(short, long)]
-    bloat: bool,
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, ArgEnum)]
+enum Mode {
+    NAIVE,
+    BLOAT,
+    MULTI,
+    CACHE,
 }
 
 fn main() {
     let args = Args::parse();
+    let (n, k) = (args.n, args.k);
 
-    let n = args.n.unwrap_or_else(|| {
-        eprintln!("Need to enter at least one number!");
-        process::exit(1)
-    });
-
-    let k = args.k.unwrap_or(BigUint::from(1u8));
-
-    match args.cache {
-        true => println!("{:?}", n_choose_k(n, k, FactorialsHashMap::new())),
-        false => match args.multi {
-            true => println!("{:?}", n_choose_k_multi_threaded(n, k)),
-            false => match args.bloat {
-                true => println!("{:?}", n_choose_k(n, k, NoCacheCache::new())),
-                false => println!("{:?}", n_choose_k_naive(n, k)),
-            },
-        },
+    match args.mode {
+        Mode::NAIVE => println!("{:?}", n_choose_k_naive(n, k)),
+        Mode::BLOAT => println!("{:?}", n_choose_k(n, k, NoCacheCache::new())),
+        Mode::CACHE => println!("{:?}", n_choose_k(n, k, FactorialsHashMap::new())),
+        Mode::MULTI => println!("{:?}", n_choose_k_multi_threaded(n, k)),
     }
 }
