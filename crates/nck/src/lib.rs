@@ -1,4 +1,4 @@
-use num::{range, BigUint};
+use num::{range_inclusive, BigUint};
 
 pub fn n_choose_k(n: u128, k: u128) -> BigUint {
     match k {
@@ -10,24 +10,9 @@ pub fn n_choose_k(n: u128, k: u128) -> BigUint {
     }
 }
 
-fn fact(n: BigUint) -> BigUint {
-    match n {
-        n if is_zero_or_1(&n) => bigu128(1),
-        _ => {
-            let mut running_result = n.clone();
-
-            for i in range(bigu128(1), n) {
-                running_result *= i;
-            }
-
-            running_result
-        }
-    }
-}
-
 #[inline]
-fn is_zero_or_1(n: &BigUint) -> bool {
-    bigu128(0) == *n || bigu128(1) == *n
+fn fact(n: BigUint) -> BigUint {
+    range_inclusive(bigu128(1), n).product()
 }
 
 #[inline]
