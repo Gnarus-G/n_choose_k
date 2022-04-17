@@ -8,6 +8,16 @@ time nck 99999 9999 &>/dev/null
 time nck 999999 9999 &>/dev/null
 set +x
 
+echo One Thread + Caching
+echo -----------
+
+set -x
+time nck -c 25000 15000 &>/dev/null
+time nck -c 25000 15000 &>/dev/null
+time nck -c 99999 9999 &>/dev/null
+time nck -c 999999 9999 &>/dev/null
+set +x
+
 echo More Thread
 echo -----------
 
