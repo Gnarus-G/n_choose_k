@@ -21,7 +21,7 @@ where
         }
     }
 
-    pub fn value(&mut self, input: I) -> O {
+    pub fn call(&mut self, input: I) -> O {
         match self.map.get(&input) {
             Some(value) => value.clone(),
             None => {
