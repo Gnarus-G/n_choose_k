@@ -1,42 +1,42 @@
+use clap::Parser;
 use n_choose_k::*;
-use std::{env::args, process::exit};
+use std::process;
 
-fn main() {
-    let args: Vec<String> = args().collect();
+#[derive(Parser, Debug)]
+#[clap(author, version, about, long_about = None)]
+struct Args {
+    /// The cardinality of the set in question.
+    #[clap(name = "n")]
+    n: Option<u128>,
 
-    let [n, k] = parse_two_numbers(&args);
+    /// The amount to choose.
+    #[clap(name = "k")]
+    k: Option<u128>,
 
-    println!("{:?}", n_choose_k_multi_threaded(n, k));
+    /// Enable multithreading.
+    #[clap(short, long)]
+    multi: bool,
+
+    /// Enable caching (also disables multithreading).
+    #[clap(short, long)]
+    cache: bool,
 }
 
-fn parse_two_numbers(args: &[String]) -> [u128; 2] {
-    let x = args
-        .get(1)
-        .unwrap_or_else(|| {
-            eprintln!("Need to enter at least one number!");
-            exit(1)
-        })
-        .parse()
-        .unwrap_or_else(|err| {
-            eprintln!(
-                "Couldn't parse a number from the first argument! \n ↪ {}",
-                err
-            );
-            exit(1)
-        });
+fn main() {
+    let args = Args::parse();
 
-    let y = args
-        .get(2)
-        .map(|s| {
-            s.parse().unwrap_or_else(|err| {
-                eprintln!(
-                    "Couldn't parse a number from the second argument! \n ↪ {}",
-                    err
-                );
-                exit(1);
-            })
-        })
-        .unwrap_or_default();
+    let n = args.n.unwrap_or_else(|| {
+        eprintln!("Need to enter at least one number!");
+        process::exit(1)
+    });
 
-    [x, y]
+    let k = args.k.unwrap_or(1);
+
+    match args.cache {
+        true => println!("{:?}", n_choose_k(n, k)),
+        false => match args.multi {
+            true => println!("{:?}", n_choose_k_multi_threaded(n, k)),
+            false => println!("{:?}", n_choose_k(n, k)),
+        },
+    }
 }
