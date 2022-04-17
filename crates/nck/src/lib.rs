@@ -1,8 +1,8 @@
-use factorial::CachedFactorials;
+use factorial::utils::utils::{CachedFactorials, FactorialsCache, NoCacheCache};
 use num::BigUint;
 
 pub fn n_choose_k(n: u128, k: u128) -> BigUint {
-    let mut factorials = CachedFactorials::new();
+    let mut factorials = CachedFactorials::new(NoCacheCache::new());
 
     match k {
         0 => big(1),

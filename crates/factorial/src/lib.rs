@@ -1,35 +1,29 @@
-use std::collections::HashMap;
+pub mod utils;
 
-use num::{range_inclusive, BigUint};
+use std::{hash::Hash, marker::PhantomData};
 
-#[derive(Debug)]
-pub struct CachedFactorials {
-    cache: HashMap<BigUint, BigUint>,
-}
+use num::{range_inclusive, BigUint, ToPrimitive, Unsigned};
+use utils::utils::{CachedFactorials, FactorialsCache};
 
-impl CachedFactorials {
-    pub fn new() -> Self {
-        let mut cache = HashMap::new();
-        cache.insert(big(0), big(1));
-        cache.insert(big(1), big(1));
-        cache.insert(big(2), big(2));
-        CachedFactorials { cache }
+impl<I: Hash + Unsigned + Eq + PartialOrd + Clone + ToPrimitive, C: FactorialsCache<I>>
+    CachedFactorials<I, C>
+{
+    pub fn new(cache: C) -> Self {
+        CachedFactorials {
+            cache,
+            phantom: PhantomData,
+        }
     }
-    pub fn get(&mut self, n: BigUint) -> BigUint {
-        match self.cache.get(&n) {
+    pub fn get(&mut self, n: I) -> I {
+        match self.cache.get(n.clone()) {
             Some(v) => v.clone(),
-            None => {
-                let len: BigUint = self.cache.len().to_owned().into();
-                let last_good_key = len - 1u8;
-
-                range_inclusive(last_good_key, n)
-                    .reduce(|x, y| {
-                        let p = x * y.clone();
-                        self.cache.insert(y, p.clone());
-                        p
-                    })
-                    .unwrap()
-            }
+            None => range_inclusive(self.cache.last_set(), n)
+                .reduce(|x, y| {
+                    let p = x * y.clone();
+                    self.cache.set(y.clone(), p.clone());
+                    p
+                })
+                .unwrap(),
         }
     }
 }
@@ -48,7 +42,10 @@ fn big(i: u128) -> BigUint {
 mod tests {
     use std::time::{Duration, Instant};
 
-    use crate::*;
+    use crate::{
+        utils::utils::{FactorialsHashMap, NoCacheCache},
+        *,
+    };
 
     #[test]
     fn test_fact_simple() {
@@ -57,11 +54,21 @@ mod tests {
     }
 
     #[test]
-    fn test_cached_run() {
-        let mut cf = CachedFactorials::new();
+    fn test_fact_no_cache() {
+        let mut cf = CachedFactorials::new(NoCacheCache::new());
         assert_eq!(cf.get(big(5)), big(120));
 
-        assert_eq!(cf.cache.get(&big(4)), Some(&big(24)));
+        assert_eq!(cf.cache.get(big(4)), None);
+
+        assert_eq!(cf.get(big(3)), big(6));
+    }
+
+    #[test]
+    fn test_cached_run() {
+        let mut cf = CachedFactorials::new(FactorialsHashMap::new());
+        assert_eq!(cf.get(big(5)), big(120));
+
+        assert_eq!(cf.cache.get(big(4)), Some(big(24)));
 
         assert_eq!(cf.get(big(3)), big(6));
 
