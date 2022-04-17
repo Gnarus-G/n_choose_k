@@ -6,6 +6,21 @@ use factorial::{
 };
 use num::{one, ToPrimitive, Unsigned};
 
+pub fn n_choose_k_naive<
+    Int: Unsigned + Eq + Hash + Clone + From<usize> + PartialOrd + ToPrimitive + Product,
+>(
+    n: Int,
+    k: Int,
+) -> Int {
+    match k {
+        k if k.is_zero() => one(),
+        k if k.is_one() => n,
+        k if k == n => one(),
+        k if (n.clone() - k.clone()).is_one() => n,
+        _ => factorial(n.clone()) / factorial(k.clone()) / factorial(n - k),
+    }
+}
+
 pub fn n_choose_k<
     Int: Unsigned + Eq + Hash + Clone + From<usize> + PartialOrd + ToPrimitive,
     C: FactorialsCache<Int>,

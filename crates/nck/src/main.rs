@@ -22,6 +22,10 @@ struct Args {
     /// Enable caching (also disables multithreading).
     #[clap(short, long)]
     cache: bool,
+
+    /// Enable bloated abstraction.
+    #[clap(short, long)]
+    bloat: bool,
 }
 
 fn main() {
@@ -38,7 +42,10 @@ fn main() {
         true => println!("{:?}", n_choose_k(n, k, FactorialsHashMap::new())),
         false => match args.multi {
             true => println!("{:?}", n_choose_k_multi_threaded(n, k)),
-            false => println!("{:?}", n_choose_k(n, k, NoCacheCache::new())),
+            false => match args.bloat {
+                true => println!("{:?}", n_choose_k(n, k, NoCacheCache::new())),
+                false => println!("{:?}", n_choose_k_naive(n, k)),
+            },
         },
     }
 }
