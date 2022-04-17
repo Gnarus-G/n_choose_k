@@ -13,4 +13,7 @@ name = "nck"
 path = "src/main.rs"
 
 [dependencies]
-num = "*"
+num = "0.4.0"
+
+[dependencies.factorial]
+path = "../factorial"
