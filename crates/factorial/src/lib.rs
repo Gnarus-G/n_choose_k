@@ -29,7 +29,7 @@ impl<I: Hash + Unsigned + Eq + PartialOrd + Clone + ToPrimitive, C: FactorialsCa
 }
 
 #[inline]
-pub fn fact_iter(n: BigUint) -> BigUint {
+pub fn factorial(n: BigUint) -> BigUint {
     range_inclusive(big(1), n).product()
 }
 
@@ -49,8 +49,8 @@ mod tests {
 
     #[test]
     fn test_fact_simple() {
-        assert_eq!(fact_iter(big(5)), big(120));
-        assert_eq!(fact_iter(big(3)), big(6));
+        assert_eq!(factorial(big(5)), big(120));
+        assert_eq!(factorial(big(3)), big(6));
     }
 
     #[test]

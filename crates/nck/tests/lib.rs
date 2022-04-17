@@ -11,6 +11,14 @@ mod tests {
     }
 
     #[test]
+    fn test_n_choose_k_multi_threaded() {
+        assert_eq!(n_choose_k_multi_threaded(3, 0), big(1));
+        assert_eq!(n_choose_k_multi_threaded(3, 1), big(3));
+        assert_eq!(n_choose_k_multi_threaded(3, 2), big(3));
+        assert_eq!(n_choose_k_multi_threaded(30, 3), big(4060))
+    }
+
+    #[test]
     fn test_no_overflow_on_trivial_input() {
         assert_eq!(n_choose_k(50, 1), big(50));
         assert_eq!(n_choose_k(90, 1), big(90));

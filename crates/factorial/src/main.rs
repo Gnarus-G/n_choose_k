@@ -1,5 +1,5 @@
 use std::{env::args, process};
-use factorial::fact_iter;
+use factorial::factorial;
 
 fn main() {
     let x: num::BigUint = args()
@@ -15,5 +15,5 @@ fn main() {
             process::exit(1)
         });
 
-    println!("{:?}", fact_iter(x));
+    println!("{:?}", factorial(x));
 }

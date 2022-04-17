@@ -6,7 +6,7 @@ fn main() {
 
     let [n, k] = parse_two_numbers(&args);
 
-    println!("{:?}", n_choose_k(n, k));
+    println!("{:?}", n_choose_k_multi_threaded(n, k));
 }
 
 fn parse_two_numbers(args: &[String]) -> [u128; 2] {
