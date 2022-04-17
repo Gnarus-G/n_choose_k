@@ -32,3 +32,20 @@ where
         }
     }
 }
+
+pub fn memo<'f, F: FnMut(I) -> O, I, O>(function: &'f mut F) -> impl FnMut(I) -> O + 'f
+where
+    I: Eq + Hash + Clone + 'f,
+    O: Clone + 'f,
+{
+    let mut map = HashMap::<I, O>::new();
+
+    move |input| match map.get(&input) {
+        Some(value) => value.clone(),
+        None => {
+            let value = function(input.clone());
+            map.insert(input, value.clone());
+            value
+        }
+    }
+}
