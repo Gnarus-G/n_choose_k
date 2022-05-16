@@ -20,7 +20,7 @@ struct Args {
     k: Option<BigUint>,
 
     /// Pick a mode; each has a different impact on performance.
-    #[clap(arg_enum, default_value = "naive")]
+    #[clap(arg_enum, default_value = "multi")]
     mode: Mode,
 }
 

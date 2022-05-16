@@ -120,7 +120,7 @@ version = "0.1.0"
 
 [[package]]
 name = "n_choose_k"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "clap",
  "factorial",
